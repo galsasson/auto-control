@@ -1,0 +1,14 @@
+{
+  "name": "nodejs_server",
+  "version": "1.0.0",
+  "description": "node.js server for auto-control",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gal Sasson",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^1.7.3"
+  }
+}

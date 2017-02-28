@@ -1,0 +1,14 @@
+#params_table {
+	background-color: #eeeeee;
+	border-collapse: collapse;
+	/*border: 1px solid #bbbbbb;*/
+}
+
+tr.params_table_tr {
+	border: 1px solid #dddddd;
+}
+
+.params_table_th {
+
+}
+

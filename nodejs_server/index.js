@@ -23,7 +23,12 @@ var parameters = [
 	{
 		"name": "color_1",
 		"type": "color",
-		"value": "#ff00ff"
+		"value": "#ffff00ff"
+	},
+	{
+		"name": "string_1",
+		"type": "string",
+		"value": "This is a sample string, edit it to update"
 	}
 ]
 
@@ -46,11 +51,22 @@ io.on('connection', function(client){
 		client.emit('param_list',parameters);
 	});
 
+	client.on('update_param', function(param) {
+		console.log("updating param "+param.name+" with value "+param.value);
+		parameters.map(function(p) {
+			if (p.name == param.name) {
+				p.value = param.value;
+				console.log("param updated successfully!");
+			}
+		});
+	});
+
 	// disconnect event
 	client.on('disconnect', function() {
 		clients--;
 		console.log("client disconnected (currently "+clients+")");
 	});
+
 
 });
 server.listen(3000);

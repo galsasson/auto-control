@@ -20,25 +20,33 @@
 
 
 	<script>
-		var parametersTable;
+		var socket = undefined;
 
 		function setColorFields() {
 			$(".alphaColorPicker").spectrum({
     			showAlpha: true,
-    			showButtons: false
+    			showButtons: false,
+    			clickoutFiresChange: true
+			});
+
+			$(".alphaColorPicker").on('move.spectrum', function(e, tinycolor) {
+				sendParamUpdate(e.target.id, tinycolor.toHex8String());
 			});
 		}
 
 
 		function createInputRow(item) {
 			if (item.type == 'bool') {
-				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input id='"+item.name+"' type='checkbox' /></tr>"
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input id='"+item.name+"' type='checkbox' "+(item.value?"checked ":" ")+"onchange='onCheckboxChanged(\""+item.name+"\");' /></tr>"
 			}
 			else if (item.type == 'float') {
-				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><ul class='empty'><li><table class='slider'><tr class='slider'><th class='slider_minmax'>"+item.min+"</th><th class='slider'><input class='slider' id='"+item.name+"/slider' type='range' min="+item.min+" max="+item.max+" step="+item.step+" value="+item.value+" /></th><th class='slider_minmax'>"+item.max+"</th></tr></table></li><li class='number'><input class='number' id='"+item.name+"/number' type='number' step="+item.step+" value="+item.value+" /></li></ul></th></tr>";
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><ul class='empty'><li><table class='slider'><tr class='slider'><th class='slider_minmax'>"+item.min+"</th><th class='slider'><input class='slider' id='"+item.name+"_slider' type='range' min="+item.min+" max="+item.max+" step="+item.step+" value="+item.value+" onchange='onSliderChanged(\""+item.name+"\");' oninput='onSliderChanged(\""+item.name+"\");'/></th><th class='slider_minmax'>"+item.max+"</th></tr></table></li><li class='number'><input class='number' id='"+item.name+"_number' type='number' step="+item.step+" value="+item.value+" onchange='onNumberChanged(\""+item.name+"\");' oninput='onNumberChanged(\""+item.name+"\");'/></li></ul></th></tr>";
 			}
 			else if (item.type == 'color') {
 				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input type='text' class='alphaColorPicker' id='"+item.name+"' value="+item.value+" /></th></tr>";
+			}
+			else if (item.type == 'string') {
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input type='text' class='string' id='"+item.name+"' value='"+item.value+"' onchange='onStringChanged(\""+item.name+"\");' oninput='onStringChanged(\""+item.name+"\");'/></th></tr>";
 			}
 		}
 
@@ -55,7 +63,7 @@
 			// Create websockets connection and define the protocol
 			var address = $('#address').val();
 			console.log("connecting to: "+address);
-			var socket = io(address);
+			socket = io(address);
 			socket.on('connect', function() {
 				console.log("connection established");
 				socket.emit('get_param_list','');
@@ -71,6 +79,40 @@
 			socket.on('disconnect', function(){
 				console.log("disconnected");
 			});
+		}
+
+		function onSliderChanged(name) {
+			// get value
+			var value = $('#'+name+'_slider').val();
+			$('#'+name+'_number').val(value);
+			sendParamUpdate(name, value);
+		}
+
+		function onNumberChanged(name) {
+			var value = $('#'+name+'_number').val();
+			$('#'+name+'_slider').val(value);
+			sendParamUpdate(name, value);
+		}
+
+		function onCheckboxChanged(name) {
+			var value = document.getElementById(name).checked;
+			sendParamUpdate(name, value);
+		}
+
+		function onStringChanged(name) {
+			var value = $('#'+name).val();
+			sendParamUpdate(name, value);
+		}
+
+		function sendParamUpdate(name, value) {
+			if (socket==undefined) {
+				return;
+			}
+			var param = {
+				"name": name,
+				"value": value
+			}
+			socket.emit('update_param', param);
 		}
 	</script>
 </html>

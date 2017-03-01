@@ -65,3 +65,7 @@ input.number {
 	width: 30%;
 	margin-top: -15px;
 }
+
+input.string {
+	width: 100%;
+}

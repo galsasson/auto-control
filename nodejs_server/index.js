@@ -32,19 +32,13 @@ var parameters = [
 	}
 ]
 
-var clients = 0;
+var clients = [];
 
 var server = require('http').createServer();
 var io = require('socket.io')(server);
 io.on('connection', function(client){
-	clients++;
-	console.log("client connected (currently " + clients + ")");
-
-	// received data event
-	client.on('event', function(data) {
-		console.log("received event:");
-		console.log(data);
-	});
+	clients.push(client);
+	console.log("client connected (currently " + clients.length + ")");
 
 	client.on('get_param_list', function(data) {
 		console.log("sending parameters list");
@@ -52,19 +46,33 @@ io.on('connection', function(client){
 	});
 
 	client.on('update_param', function(param) {
-		console.log("updating param "+param.name+" with value "+param.value);
-		parameters.map(function(p) {
+		// console.log("updating param "+param.name+" with value "+param.value);
+		var index;
+		for (index=0; index<parameters.length; index++) {
+			var p = parameters[index];
 			if (p.name == param.name) {
 				p.value = param.value;
-				console.log("param updated successfully!");
+				break;
 			}
-		});
+		}
+
+		// update other clients
+		for (var c=0; c<clients.length; c++) {
+			if (clients[c] == client) {
+				continue;
+			}
+
+			clients[c].emit('update_param', parameters[index]);
+		}
 	});
 
 	// disconnect event
 	client.on('disconnect', function() {
-		clients--;
-		console.log("client disconnected (currently "+clients+")");
+		var index = clients.indexOf(client);
+		if (index>-1) {
+			clients.splice(index, 1);
+		}
+		console.log("client disconnected (currently "+clients.length+")");
 	});
 
 

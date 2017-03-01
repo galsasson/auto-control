@@ -76,6 +76,10 @@
 				setColorFields();
 			});
 
+			socket.on('update_param', function(data) {
+				onUpdateParam(data);
+			});
+
 			socket.on('disconnect', function(){
 				console.log("disconnected");
 			});
@@ -113,6 +117,22 @@
 				"value": value
 			}
 			socket.emit('update_param', param);
+		}
+
+		function onUpdateParam(param) {
+			if (param.type=='bool') {
+				document.getElementById(param.name).checked = param.value;
+			}
+			else if (param.type=='float') {
+				document.getElementById(param.name+"_slider").value = param.value;
+				document.getElementById(param.name+"_number").value = param.value;
+			}
+			else if (param.type=='color') {
+				$('#'+param.name).spectrum('set',param.value);
+			}
+			else if (param.type=='string') {
+				document.getElementById(param.name).value = param.value;
+			}
 		}
 	</script>
 </html>

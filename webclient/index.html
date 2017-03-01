@@ -32,13 +32,13 @@
 
 		function createInputRow(item) {
 			if (item.type == 'bool') {
-				return "<tr class='params_table_tr'><th>"+item.name+"</th><th><input id='"+item.name+"' type='checkbox' /><th></th></tr>"
+				return "<tr class='params_table_tr'><th>"+item.name+"</th><th><input id='"+item.name+"' type='checkbox' /></tr>"
 			}
 			else if (item.type == 'float') {
-				return "<tr class='params_table_tr'><th>"+item.name+"</th><th><input id='"+item.name+"/slider' type='range' min="+item.min+" max="+item.max+" step="+item.step+" value="+item.value+" /></th><th><input id='"+item.name+"/number' type='number' step="+item.step+" value="+item.value+" /></th></tr>";
+				return "<tr class='params_table_tr'><th>"+item.name+"</th><th><ul class='empty'><li><input id='"+item.name+"/slider' type='range' min="+item.min+" max="+item.max+" step="+item.step+" value="+item.value+" /></li><li><input class='number' id='"+item.name+"/number' type='number' step="+item.step+" value="+item.value+" /></li></ul></th></tr>";
 			}
 			else if (item.type == 'color') {
-				return "<tr class='params_table_tr'><th>"+item.name+"</th><th><input type='text' class='alphaColorPicker' id='"+item.name+"' value="+item.value+" /></th><th></th></tr>";
+				return "<tr class='params_table_tr'><th>"+item.name+"</th><th><input type='text' class='alphaColorPicker' id='"+item.name+"' value="+item.value+" /></th></tr>";
 			}
 		}
 

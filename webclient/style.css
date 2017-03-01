@@ -1,7 +1,7 @@
 #params_table {
 	background-color: #eeeeee;
 	border-collapse: collapse;
-	/*border: 1px solid #bbbbbb;*/
+	border: 2px solid #444444;
 }
 
 tr.params_table_tr {
@@ -12,3 +12,17 @@ tr.params_table_tr {
 
 }
 
+th {
+	padding: 5px 50px 5px 5px;
+}
+
+ul.empty {
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+input.number {
+	width: 50%;
+	margin-top: -5px;
+}

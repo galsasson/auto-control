@@ -11,7 +11,7 @@
 	<table>
 		<tr>
 			<th>application address:</th>
-			<th><input id='address' type='text' value='http://localhost:3000' /></th>
+			<th><input id='address' type='text' value='http://192.168.202.60:3000' /></th>
 			<th><button onclick='onConnectClick();'>connect</button></th>
 		</tr>
 	</table>
@@ -32,13 +32,13 @@
 
 		function createInputRow(item) {
 			if (item.type == 'bool') {
-				return "<tr class='params_table_tr'><th>"+item.name+"</th><th><input id='"+item.name+"' type='checkbox' /></tr>"
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input id='"+item.name+"' type='checkbox' /></tr>"
 			}
 			else if (item.type == 'float') {
-				return "<tr class='params_table_tr'><th>"+item.name+"</th><th><ul class='empty'><li><input id='"+item.name+"/slider' type='range' min="+item.min+" max="+item.max+" step="+item.step+" value="+item.value+" /></li><li><input class='number' id='"+item.name+"/number' type='number' step="+item.step+" value="+item.value+" /></li></ul></th></tr>";
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><ul class='empty'><li><table class='slider'><tr class='slider'><th class='slider_minmax'>"+item.min+"</th><th class='slider'><input class='slider' id='"+item.name+"/slider' type='range' min="+item.min+" max="+item.max+" step="+item.step+" value="+item.value+" /></th><th class='slider_minmax'>"+item.max+"</th></tr></table></li><li class='number'><input class='number' id='"+item.name+"/number' type='number' step="+item.step+" value="+item.value+" /></li></ul></th></tr>";
 			}
 			else if (item.type == 'color') {
-				return "<tr class='params_table_tr'><th>"+item.name+"</th><th><input type='text' class='alphaColorPicker' id='"+item.name+"' value="+item.value+" /></th></tr>";
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input type='text' class='alphaColorPicker' id='"+item.name+"' value="+item.value+" /></th></tr>";
 			}
 		}
 

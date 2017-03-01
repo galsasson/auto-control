@@ -9,6 +9,7 @@
   "author": "Gal Sasson",
   "license": "ISC",
   "dependencies": {
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "websocket": "^1.0.24"
   }
 }

@@ -1,0 +1,162 @@
+
+<html>
+<head>
+	<script src='libs/jquery-3.1.1.min.js'></script>
+	<script src='libs/spectrum.js'></script>
+	<link rel='stylesheet' href='libs/spectrum.css' />
+	<link rel='stylesheet' href='style.css' />
+</head>
+<body>
+	<table>
+		<tr>
+			<th>application address:</th>
+			<th><input id='address' type='text' value='ws://localhost:8080' /></th>
+			<th><button onclick='onConnectClick();'>connect</button></th>
+		</tr>
+	</table>
+	<div id="app_params"></div>
+</body>
+
+
+	<script>
+		var socket = undefined;
+
+		function setColorFields() {
+			$(".alphaColorPicker").spectrum({
+    			showAlpha: true,
+    			showButtons: false,
+    			clickoutFiresChange: true
+			});
+
+			$(".alphaColorPicker").on('move.spectrum', function(e, tinycolor) {
+				sendParamUpdate(e.target.id, tinycolor.toHex8String());
+			});
+		}
+
+
+		function createInputRow(item) {
+			if (item.type == 'bool') {
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input id='"+item.name+"' type='checkbox' "+(item.value?"checked ":" ")+"onchange='onCheckboxChanged(\""+item.name+"\");' /></tr>"
+			}
+			else if (item.type == 'float') {
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><ul class='empty'><li><table class='slider'><tr class='slider'><th class='slider_minmax'>"+item.min+"</th><th class='slider'><input class='slider' id='"+item.name+"_slider' type='range' min="+item.min+" max="+item.max+" step="+item.step+" value="+item.value+" onchange='onSliderChanged(\""+item.name+"\");' oninput='onSliderChanged(\""+item.name+"\");'/></th><th class='slider_minmax'>"+item.max+"</th></tr></table></li><li class='number'><input class='number' id='"+item.name+"_number' type='number' step="+item.step+" value="+item.value+" onchange='onNumberChanged(\""+item.name+"\");' oninput='onNumberChanged(\""+item.name+"\");'/></li></ul></th></tr>";
+			}
+			else if (item.type == 'color') {
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input type='text' class='alphaColorPicker' id='"+item.name+"' value="+item.value+" /></th></tr>";
+			}
+			else if (item.type == 'string') {
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input type='text' class='string' id='"+item.name+"' value='"+item.value+"' onchange='onStringChanged(\""+item.name+"\");' oninput='onStringChanged(\""+item.name+"\");'/></th></tr>";
+			}
+		}
+
+		function createParametersTable(parameters) {
+			var table = "<table id='params_table'>";
+			parameters.map(function (item) {
+				table += createInputRow(item);
+			});
+			table += "</table>"
+			return table;
+		}
+
+		function onConnectClick() {
+			// Create websockets connection and define the protocol
+			var address = $('#address').val();
+			console.log("connecting to: "+address);
+
+			socket = new WebSocket(address, "echo-protocol");
+
+			socket.addEventListener("open", function(event) {
+				console.log("connection established");
+				console.log(event);
+				socket.send("Hello!!!");
+			});
+
+			socket.addEventListener("message", function(event) {
+				console.log("server says: "+event.data);
+				console.log(event);
+			});
+
+			socket.addEventListener("error", function(event) {
+				console.log("socket error");
+				console.log(event);
+			});
+
+			socket.addEventListener("close", function(event) {
+				console.log("connection closed");
+				console.log(event);
+			});
+			/*
+			socket = io(address);
+			socket.on('connect', function() {
+				console.log("connection established");
+				socket.emit('get_param_list','');
+			});
+
+			socket.on('param_list', function(data){
+				console.log("received parameters list:");
+				console.log(data);
+				$('#app_params').replaceWith(createParametersTable(data));
+				setColorFields();
+			});
+
+			socket.on('update_param', function(data) {
+				onUpdateParam(data);
+			});
+
+			socket.on('disconnect', function(){
+				console.log("disconnected");
+			});
+		*/
+		}
+
+		function onSliderChanged(name) {
+			// get value
+			var value = $('#'+name+'_slider').val();
+			$('#'+name+'_number').val(value);
+			sendParamUpdate(name, value);
+		}
+
+		function onNumberChanged(name) {
+			var value = $('#'+name+'_number').val();
+			$('#'+name+'_slider').val(value);
+			sendParamUpdate(name, value);
+		}
+
+		function onCheckboxChanged(name) {
+			var value = document.getElementById(name).checked;
+			sendParamUpdate(name, value);
+		}
+
+		function onStringChanged(name) {
+			var value = $('#'+name).val();
+			sendParamUpdate(name, value);
+		}
+
+		function sendParamUpdate(name, value) {
+			if (socket==undefined) {
+				return;
+			}
+			var param = {
+				"name": name,
+				"value": value
+			}
+			socket.emit('update_param', param);
+		}
+
+		function onUpdateParam(param) {
+			if (param.type=='bool') {
+				document.getElementById(param.name).checked = param.value;
+			}
+			else if (param.type=='float') {
+				document.getElementById(param.name+"_slider").value = param.value;
+				document.getElementById(param.name+"_number").value = param.value;
+			}
+			else if (param.type=='color') {
+				$('#'+param.name).spectrum('set',param.value);
+			}
+			else if (param.type=='string') {
+				document.getElementById(param.name).value = param.value;
+			}
+		}
+	</script>
+</html>

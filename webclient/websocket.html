@@ -10,7 +10,7 @@
 	<table>
 		<tr>
 			<th>application address:</th>
-			<th><input id='address' type='text' value='ws://localhost:8080' /></th>
+			<th><input id='address' type='text' value='ws://192.168.1.65:8080/sockets/' /></th>
 			<th><button onclick='onConnectClick();'>connect</button></th>
 		</tr>
 	</table>
@@ -63,7 +63,7 @@
 			var address = $('#address').val();
 			console.log("connecting to: "+address);
 
-			socket = new WebSocket(address, "echo-protocol");
+			socket = new WebSocket(address, "echo");
 
 			socket.addEventListener("open", function(event) {
 				console.log("connection established");

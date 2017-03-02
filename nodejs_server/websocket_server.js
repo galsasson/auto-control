@@ -71,7 +71,7 @@ wsServer.on('request', function(request) {
       return;
     }
 
-    var connection = request.accept('auto-control', request.origin);
+    var connection = request.accept('remote-control', request.origin);
     connections.push(connection);
     console.log("client connected (currently " + connections.length + ")");
     connection.on('message', function(message) {

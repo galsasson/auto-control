@@ -64,7 +64,7 @@
 			var address = $('#address').val();
 			console.log("connecting to: "+address);
 
-			socket = new WebSocket(address, "auto-control");
+			socket = new WebSocket(address, "remote-control");
 
 			/* define event types:
 			 * set_param_list - take the parameters list and put them in a table

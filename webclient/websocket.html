@@ -10,7 +10,7 @@
 	<table>
 		<tr>
 			<th>application address:</th>
-			<th><input id='address' type='text' value='ws://localhost:8080/' /></th>
+			<th><input id='address' type='text' value='ws://192.168.1.65:8080/rc/' /></th>
 			<th><button onclick='onConnectClick();'>connect</button></th>
 		</tr>
 	</table>
@@ -30,7 +30,7 @@
 			});
 
 			$(".alphaColorPicker").on('move.spectrum', function(e, tinycolor) {
-				sendParamUpdate(e.target.id, tinycolor.toHex8String());
+				sendParamUpdate(e.target.id, "color", tinycolor.toHex8String());
 			});
 		}
 
@@ -39,7 +39,7 @@
 			if (item.type == 'bool') {
 				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input id='"+item.name+"' type='checkbox' "+(item.value?"checked ":" ")+"onchange='onCheckboxChanged(\""+item.name+"\");' /></tr>"
 			}
-			else if (item.type == 'float') {
+			else if (item.type == 'double') {
 				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><ul class='empty'><li><table class='slider'><tr class='slider'><th class='slider_minmax'>"+item.min+"</th><th class='slider'><input class='slider' id='"+item.name+"_slider' type='range' min="+item.min+" max="+item.max+" step="+item.step+" value="+item.value+" onchange='onSliderChanged(\""+item.name+"\");' oninput='onSliderChanged(\""+item.name+"\");'/></th><th class='slider_minmax'>"+item.max+"</th></tr></table></li><li class='number'><input class='number' id='"+item.name+"_number' type='number' step="+item.step+" value="+item.value+" onchange='onNumberChanged(\""+item.name+"\");' oninput='onNumberChanged(\""+item.name+"\");'/></li></ul></th></tr>";
 			}
 			else if (item.type == 'color') {
@@ -72,13 +72,15 @@
 			 */
 			socket.events = [];
 			socket.events['set_param_list'] = function(data) {
+				var jsonData = JSON.parse(data);
 				console.log("received parameters list:");
-				console.log(data);
-				$('#params_table').replaceWith(createParametersTable(data));
+				console.log(jsonData.list);
+				$('#params_table').replaceWith(createParametersTable(jsonData.list));
 				setColorFields();
 			};
 			socket.events['update_param'] = function(param) {
-				onUpdateParam(param);
+				var jsonParam = JSON.parse(param);
+				onUpdateParam(jsonParam);
 			};
 
 
@@ -92,8 +94,8 @@
 				// console.log("server says: "+event.data);
 				// console.log(event);
 				var json = JSON.parse(event.data);
-				if (socket.events[json.event] != undefined) {
-					socket.events[json.event](json.data);
+				if (socket.events[json.type] != undefined) {
+					socket.events[json.type](json.data);
 				}
 			});
 
@@ -107,52 +109,53 @@
 				connected = false;
 				var params=[];
 				var table = createParametersTable(params);
-				console.log(table);
 				$('#params_table').replaceWith(table);
 			});
 		}
 
 		function getParamList() {
 			var json = {
-				event: 'get_param_list'
+				type: 'get_param_list',
+				data: ''
 			}
 			socket.send(JSON.stringify(json));
 		}
 
 		function onSliderChanged(name) {
 			// get value
-			var value = $('#'+name+'_slider').val();
-			$('#'+name+'_number').val(value);
-			sendParamUpdate(name, value);
+			var value = $("[id='"+name+"_slider']").val();
+			$("[id='"+name+"_number']").val(value);
+			sendParamUpdate(name, "double", value);
 		}
 
 		function onNumberChanged(name) {
-			var value = $('#'+name+'_number').val();
-			$('#'+name+'_slider').val(value);
-			sendParamUpdate(name, value);
+			var value = $("[id='"+name+"_number']").val();
+			$("[id='"+name+"_slider']").val(value);
+			sendParamUpdate(name, "double", value);
 		}
 
 		function onCheckboxChanged(name) {
 			var value = document.getElementById(name).checked;
-			sendParamUpdate(name, value);
+			sendParamUpdate(name, "bool", value);
 		}
 
 		function onStringChanged(name) {
-			var value = $('#'+name).val();
-			sendParamUpdate(name, value);
+			var value = $("[id='"+name+"']").val();
+			sendParamUpdate(name, "string", value);
 		}
 
-		function sendParamUpdate(name, value) {
+		function sendParamUpdate(name, type, value) {
 			if (socket==undefined) {
 				return;
 			}
 			var param = {
 				"name": name,
+				"type": type,
 				"value": value
 			}
 			var json = {
-				event: 'update_param',
-				data: param
+				type: 'update_param',
+				data: JSON.stringify(param)
 			}
 			socket.send(JSON.stringify(json));
 		}
@@ -161,12 +164,12 @@
 			if (param.type=='bool') {
 				document.getElementById(param.name).checked = param.value;
 			}
-			else if (param.type=='float') {
+			else if (param.type=='double') {
 				document.getElementById(param.name+"_slider").value = param.value;
 				document.getElementById(param.name+"_number").value = param.value;
 			}
 			else if (param.type=='color') {
-				$('#'+param.name).spectrum('set',param.value);
+				$("[id='"+param.name+"']").spectrum('set',param.value);
 			}
 			else if (param.type=='string') {
 				document.getElementById(param.name).value = param.value;

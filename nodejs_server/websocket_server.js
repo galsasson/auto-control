@@ -8,7 +8,7 @@ var parameters = [
     },
     {
         "name": "value_1",
-        "type": "float",
+        "type": "double",
         "min": 0,
         "max": 1,
         "step": 0.01,
@@ -16,7 +16,7 @@ var parameters = [
     },
     {
         "name": "value_2",
-        "type": "float",
+        "type": "double",
         "min": 0,
         "max": 100,
         "step": 1,
@@ -94,10 +94,10 @@ wsServer.on('request', function(request) {
 
 function parseMessage(connection, message) {
     var json = JSON.parse(message);
-    if (json.event == "get_param_list") {
+    if (json.type == "get_param_list") {
         sendParamList(connection);
     }
-    else if (json.event == "update_param") {
+    else if (json.type == "update_param") {
         updateParam(connection, json.data);
     }
 }
@@ -105,8 +105,8 @@ function parseMessage(connection, message) {
 function sendParamList(connection)
 {
     var json = { 
-        event: 'set_param_list',
-        data: parameters
+        type: 'set_param_list',
+        data: {'list':parameters}
     };
     connection.sendUTF(JSON.stringify(json));
 }
@@ -129,7 +129,7 @@ function updateParam(connection, param) {
 
     // update other connections
     var json = {
-        event: 'update_param',
+        type: 'update_param',
         data: p
     };
     var msg = JSON.stringify(json);

@@ -1,0 +1,71 @@
+body {
+}
+
+#params_table {
+	width: 100%;
+	background-color: #eeeeee;
+	border-collapse: collapse;
+	border: 1px solid #777777;
+}
+
+tr.params_table_tr {
+	border: 1px solid #dddddd;
+}
+
+.params_table_th {
+
+}
+
+th {
+	padding: 5px 5px 5px 5px;
+	text-align: left;
+}
+
+th.name {
+	width: 20%;
+}
+
+th.value {
+	width: 80%;
+}
+
+ul.empty {
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+li.number {
+	text-align: center;
+}
+
+/* slider */
+table.slider {
+	width: 100%;
+}
+
+tr.slider {
+	width: 100%;
+}
+
+th.slider {
+	width: 100%;
+}
+
+th.slider_minmax {
+	font-size:70%;
+	padding-right:5px;
+}
+
+input.slider {
+	width: 100%;
+}
+
+input.number {
+	width: 30%;
+	margin-top: -15px;
+}
+
+input.string {
+	width: 100%;
+}

@@ -98,7 +98,7 @@ function parseMessage(connection, message) {
         sendParamList(connection);
     }
     else if (json.type == "update_param") {
-        updateParam(connection, json.data);
+        updateParam(connection, JSON.parse(json.data));
     }
 }
 
@@ -106,7 +106,7 @@ function sendParamList(connection)
 {
     var json = { 
         type: 'set_param_list',
-        data: {'list':parameters}
+        data: JSON.stringify({'list':parameters})
     };
     connection.sendUTF(JSON.stringify(json));
 }
@@ -130,7 +130,7 @@ function updateParam(connection, param) {
     // update other connections
     var json = {
         type: 'update_param',
-        data: p
+        data: JSON.stringify(p)
     };
     var msg = JSON.stringify(json);
 

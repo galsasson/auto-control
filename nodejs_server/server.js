@@ -2,40 +2,47 @@
 
 var parameters = [
     {
-        "name": "toggle_1",
+        "name": "Enable animation",
         "type": "bool",
-        "value": false
+        "boolVal": false
     },
     {
-        "name": "value_1",
+        "name": "Global speed",
         "type": "double",
         "min": 0,
         "max": 1,
         "step": 0.01,
-        "value": 0
+        "doubleVal": 0
     },
     {
-        "name": "value_2",
+        "name": "Sprite size",
         "type": "double",
         "min": 0,
         "max": 100,
         "step": 1,
-        "value": 50
+        "doubleVal": 50
     },
     {
-        "name": "color_1",
+        "name": "Sprite tint",
         "type": "color",
-        "value": "#ffff00ff"
+        "colorVal": "#ffff00ff"
     },
     {
-        "name": "string_1",
+        "name": "Message",
         "type": "string",
-        "value": "This is a sample string, edit it to update"
+        "stringVal": "This is a sample string, edit it to update"
     }
 ]
 
-var connections = [];
 
+// read all presets
+var presets = [];
+var presetFolder = './presets/';
+var fs = require('fs');
+fillPresetList();
+
+// handle connections
+var connections = [];
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 
@@ -100,13 +107,60 @@ function parseMessage(connection, message) {
     else if (json.type == "update_param") {
         updateParam(connection, JSON.parse(json.data));
     }
+    else if (json.type == "get_preset_list") {
+        sendPresetList(connection);
+    }
+    else if (json.type == "save_preset") {
+        fs.writeFile(presetFolder + json.data, JSON.stringify(parameters), function(err) {
+            if (err) {
+                return console.log(err);
+            }
+            console.log("New preset saved in: "+presetFolder + json.data);
+            fillPresetList();
+            for (var c=0; c<connections.length; c++) {
+                sendPresetList(connections[c]);
+            }
+        });
+    }
+    else if (json.type == "load_preset") {
+        fs.readFile(presetFolder + json.data, 'utf8', function(err, data) {
+            if (err) {
+                return console.log(err);
+            }
+            parameters = JSON.parse(data);
+            for (var c=0; c<connections.length; c++) {
+                sendParamList(connections[c]);
+            }
+        });
+    }
 }
 
 function sendParamList(connection)
 {
-    var json = { 
+    var json = {
         type: 'set_param_list',
         data: JSON.stringify({'list':parameters})
+    };
+    connection.sendUTF(JSON.stringify(json));
+}
+
+function fillPresetList()
+{
+    presets=[];
+    var files = fs.readdirSync(presetFolder);
+    files.forEach(file => {
+        // add each file as a preset (ignore hidden)
+        if (file[0] != '.') {
+            presets.push(file);
+        }
+    });
+}
+
+function sendPresetList(connection)
+{
+    var json = {
+        type: 'set_preset_list',
+        data: JSON.stringify({'list':presets})
     };
     connection.sendUTF(JSON.stringify(json));
 }
@@ -118,7 +172,18 @@ function updateParam(connection, param) {
     for (index=0; index<parameters.length; index++) {
         p = parameters[index];
         if (p.name == param.name) {
-            p.value = param.value;
+            if (p.type == "bool") {
+                p.boolVal = param.boolVal;
+            }
+            else if (p.type == "double") {
+                p.doubleVal = param.doubleVal;
+            }
+            else if (p.type == "color") {
+                p.colorVal = param.colorVal;
+            }
+            else if (p.type == "string") {
+                p.stringVal = param.stringVal;
+            }
             break;
         }
     }

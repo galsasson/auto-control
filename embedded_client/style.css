@@ -62,8 +62,7 @@ input.slider {
 }
 
 input.number {
-	width: 30%;
-	margin-top: -15px;
+	width: 70px;
 }
 
 input.string {

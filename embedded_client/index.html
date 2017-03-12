@@ -50,7 +50,19 @@
 				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input id='"+item.name+"' type='checkbox' "+(item.boolVal?"checked ":" ")+"onchange='onCheckboxChanged(\""+item.name+"\");' /></tr>"
 			}
 			else if (item.type == 'double') {
-				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><ul class='empty'><li><table class='slider'><tr class='slider'><th class='slider_minmax'>"+item.min+"</th><th class='slider'><input class='slider' id='"+item.name+"_slider' type='range' min="+item.min+" max="+item.max+" step="+item.step+" value="+item.doubleVal+" onchange='onSliderChanged(\""+item.name+"\");' oninput='onSliderChanged(\""+item.name+"\");'/></th><th class='slider_minmax'>"+item.max+"</th></tr></table></li><li class='number'><input class='number' id='"+item.name+"_number' type='number' step="+item.step+" value="+item.doubleVal+" onchange='onNumberChanged(\""+item.name+"\");' oninput='onNumberChanged(\""+item.name+"\");'/></li></ul></th></tr>";
+				return "<tr class='params_table_tr'>\
+							<th class='name'>"+item.name+"</th>\
+							<th class='value'>\
+										<table class='slider'>\
+											<tr class='slider'>\
+												<th class='number'><input class='number' id='"+item.name+"_number' type='number' step="+item.step+" value="+item.doubleVal+" onchange='onNumberChanged(\""+item.name+"\");' oninput='onNumberChanged(\""+item.name+"\");' /></th>\
+												<th class='slider_minmax'>"+item.min+"</th>\
+												<th class='slider'><input class='slider' id='"+item.name+"_slider' type='range' min="+item.min+" max="+item.max+" step="+item.step+" value="+item.doubleVal+" onchange='onSliderChanged(\""+item.name+"\");' oninput='onSliderChanged(\""+item.name+"\");' /></th>\
+												<th class='slider_minmax'>"+item.max+"</th>\
+											</tr>\
+										</table>\
+							</th>\
+						</tr>";
 			}
 			else if (item.type == 'color') {
 				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input type='text' class='alphaColorPicker' id='"+item.name+"' value="+item.colorVal+" /></th></tr>";

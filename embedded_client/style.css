@@ -1,15 +1,27 @@
 body {
+	background-color: #000;
+	color: #fff;
+	font-family: Sans-Serif;
+	font-weight: normal;
 }
 
 #params_table {
 	width: 100%;
-	background-color: #eeeeee;
+	background-color: #444;
+	color: #eee;
 	border-collapse: collapse;
-	border: 1px solid #777777;
+	border: 3px solid #888;
+	font-size: smaller;
+}
+
+#presets_table {
+	width: 50%;
+	background-color: #111;
+	color: #aaa;
 }
 
 tr.params_table_tr {
-	border: 1px solid #dddddd;
+	border: 1px solid #888;
 }
 
 .params_table_th {
@@ -17,26 +29,17 @@ tr.params_table_tr {
 }
 
 th {
-	padding: 5px 5px 5px 5px;
+	/*padding: 5px 5px 5px 5px;*/
 	text-align: left;
 }
 
 th.name {
+	padding-left: 10px;
 	width: 20%;
 }
 
 th.value {
 	width: 80%;
-}
-
-ul.empty {
-	list-style: none;
-	padding: 0px;
-	margin: 0px;
-}
-
-li.number {
-	text-align: center;
 }
 
 /* slider */
@@ -63,6 +66,7 @@ input.slider {
 
 input.number {
 	width: 70px;
+	margin-right: 10px;
 }
 
 input.string {

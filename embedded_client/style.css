@@ -5,6 +5,27 @@ body {
 	font-weight: normal;
 }
 
+#connection_table {
+	width: 100%;
+	background-color: #aaa;
+}
+
+#address_label_th {
+	min-width: 120px;
+}
+
+#address_th {
+	width: 80%;
+}
+
+input#address {
+	width: 100%;
+}
+
+#connect_btn_th {
+	width: 10%;
+}
+
 #params_table {
 	width: 100%;
 	background-color: #444;
@@ -29,12 +50,11 @@ tr.params_table_tr {
 }
 
 th {
-	/*padding: 5px 5px 5px 5px;*/
 	text-align: left;
 }
 
 th.name {
-	padding-left: 10px;
+	padding-left: 5px;
 	width: 20%;
 }
 

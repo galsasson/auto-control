@@ -1,6 +1,7 @@
 
 <html>
 <head>
+	<meta name="viewport" content="width=320, initial-scale=1">
 	<script src='libs/jquery-3.1.1.min.js'></script>
 	<script src='libs/spectrum.js'></script>
 	<link rel="icon" type="image/png" sizes="96x96" href="/favicon.png">
@@ -8,12 +9,12 @@
 	<link rel='stylesheet' href='style.css' />
 </head>
 <body onload='onConnectClick();'>
-	<table>
+	<table id='connection_table'>
 		<tr>
-			<th>Remote-Control Address:</th>
-			<!--<th><input id='address' type='text' value='{{websocket_server_address}}' /></th>-->
-			<th><input id='address' type='text' value='ws://192.168.1.5:8080/rc/' /></th>
-			<th><input type='button' id='connect_btn' onclick='onConnectClick();' value='Connect' /></th>
+			<th id='address_label_th'>App Address:</th>
+			<!--<th id='address_th'><input id='address' type='text' value='{{websocket_server_address}}' /></th>-->
+			<th id='address_th'><input id='address' type='text' value='ws://192.168.1.5:8080/rc/' /></th>
+			<th id='connect_btn_th'><input type='button' id='connect_btn' onclick='onConnectClick();' value='Connect' /></th>
 		</tr>
 	</table>
     <div id='app_presets_div'>

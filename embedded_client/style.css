@@ -7,11 +7,14 @@ body {
 
 #connection_table {
 	width: 100%;
-	background-color: #aaa;
+	background-color: #eee;
+	color: #444;
+	padding-left: 4px;
+	padding-top: 4px;
 }
 
 #address_label_th {
-	min-width: 120px;
+	min-width: 60px;
 }
 
 #address_th {
@@ -28,29 +31,15 @@ input#address {
 
 #params_table {
 	width: 100%;
-	background-color: #444;
+	background-color: #333;
 	color: #eee;
 	border-collapse: collapse;
-	border: 3px solid #888;
+	border: 3px solid #eee;
 	font-size: smaller;
 }
 
-#presets_table {
-	width: 50%;
-	background-color: #111;
-	color: #aaa;
-}
-
 tr.params_table_tr {
-	border: 1px solid #888;
-}
-
-.params_table_th {
-
-}
-
-th {
-	text-align: left;
+	border: 1px solid #eee;
 }
 
 th.name {
@@ -91,4 +80,47 @@ input.number {
 
 input.string {
 	width: 100%;
+}
+
+/**************/
+/*	PRESETS   */
+/**************/
+
+#presets_title_table {
+	padding-left: 4px;
+	padding-top: 4px;
+	margin-top: 10px;
+	width: 100%;
+	background-color: #aab;
+	color: #222;
+}
+
+#presets_table {
+	width: 100%;
+	background-color: #222;
+	color: #aab;
+	border: 3px solid #aab;
+}
+
+tr#presets_table_title {
+	background-color: #666;
+}
+
+th {
+	text-align: left;
+}
+
+th.preset_name {
+	font-size: smaller;
+	width: 90%;
+}
+
+input#new_preset_name {
+	float: left;
+	width: 79%;
+}
+
+input#new_preset_btn {
+	width:19%;
+	float: right;
 }

@@ -11,23 +11,22 @@
 <body onload='onConnectClick();'>
 	<table id='connection_table'>
 		<tr>
-			<th id='address_label_th'>App Address:</th>
+			<th id='address_label_th'>Address:</th>
 			<!--<th id='address_th'><input id='address' type='text' value='{{websocket_server_address}}' /></th>-->
 			<th id='address_th'><input id='address' type='text' value='ws://192.168.1.5:8080/rc/' /></th>
 			<th id='connect_btn_th'><input type='button' id='connect_btn' onclick='onConnectClick();' value='Connect' /></th>
 		</tr>
 	</table>
+	<div id='app_params_div'><table id='params_table'></table></div>
     <div id='app_presets_div'>
-        <table>
-            <tr>
-                <th>Preset:</th>
-                <th><input id='preset_name' type='text' /></th>
-                <th><input type='button' id='save_preset_btn' onclick='onSavePresetClick();' value='Save' /></th>
-            </tr>
-        </table>
+    	<table id='presets_title_table'>
+    		<tr>
+    			<th style='width:50%;'>Presets</th>
+    			<th style='width:50%;'><div style='width:100%;'><input id='new_preset_name' type='text' /><input type='button' id='new_preset_btn' onclick='onNewPresetClick();' value='create new' /></div></th>
+    		</tr>
+    	</table>
         <table id='presets_table'></table>
     </div>
-	<div id='app_params_div'><table id='params_table'></table></div>
 
 
 	<script>
@@ -38,7 +37,9 @@
 			$(".alphaColorPicker").spectrum({
     			showAlpha: true,
     			showButtons: false,
-    			clickoutFiresChange: true
+    			clickoutFiresChange: true,
+    			preferredFormat: "rgb",
+    			showInput: true
 			});
 
 			$(".alphaColorPicker").on('move.spectrum', function(e, tinycolor) {
@@ -84,17 +85,22 @@
 		}
 
 		function createPresetsTable(presetsList) {
-		    var table = "<table id='presets_table'><tr>";
-		    var i = 0;
+		    var table = "<table id='presets_table'>";
 		    presetsList.map(function (name) {
-		        table += "<th><input type='button' onclick='onLoadPreset(\"" + name + "\");' value='" + name + "' /></th>";
-		        if (++i == 5) {
-		            table += "</tr><tr>";
-		            i = 0;
-		        }
+		    	table += createPresetRow(name);
 		    });
-		    table += "</tr></table>";
+		    table += "</table>";
 		    return table;
+		}
+
+		function createPresetRow(name) {
+			return "<tr style='border: 1px solid #aab;'>\
+						<th class='preset_name'>"+name+"</th>\
+						<th><input type='button' onclick='onLoadPreset(\"" + name + "\");' value='load' /></th>\
+						<th><input type='button' onclick='onSavePreset(\"" + name + "\");' value='save' /></th>\
+						<th><input type='button' onclick='onDeletePreset(\"" + name + "\");' value='delete' /></th>\
+					</tr>";
+				//"<tr><th><input type='button' onclick='onLoadPreset(\"" + name + "\");' value='" + name + "' /></th></tr>";
 		}
 
 		function onConnectClick() {
@@ -165,12 +171,8 @@
 			});
 		}
 
-		function onSavePresetClick() {
-		    var json = {
-		        type: 'save_preset',
-		        data: document.getElementById('preset_name').value
-		    }
-		    socket.send(JSON.stringify(json));
+		function onNewPresetClick() {
+			onSavePreset(document.getElementById('new_preset_name').value);
 		}
 
 		function onLoadPreset(name) {
@@ -179,6 +181,22 @@
                 data: name
 		    }
 		    socket.send(JSON.stringify(json));
+		}
+
+		function onSavePreset(name) {
+		    var json = {
+		        type: 'save_preset',
+		        data: name
+		    }
+		    socket.send(JSON.stringify(json));
+		}
+
+		function onDeletePreset(name) {
+			var json = {
+				type: 'delete_preset',
+				data: name
+			}
+			socket.send(JSON.stringify(json));
 		}
 
 		function onDisconnectClick() {

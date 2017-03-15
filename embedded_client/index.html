@@ -162,9 +162,8 @@
 				connected = false;
 				socket = undefined;
 				var params=[], presets=[];
-				var table = createParametersTable(params);
-				$('#params_table').replaceWith(table);
-				$('#presets_table').replaceWith(presets);
+				$('#params_table').replaceWith(createParametersTable(params));
+				$('#presets_table').replaceWith(createPresetsTable(presets));
 				document.getElementById('connect_btn').value = "Connect";
 				document.getElementById('connect_btn').onclick = function () { onConnectClick(); };
 				document.getElementById('app_presets_div').style.visibility = "hidden";
@@ -172,7 +171,13 @@
 		}
 
 		function onNewPresetClick() {
-			onSavePreset(document.getElementById('new_preset_name').value);
+			var name = document.getElementById('new_preset_name').value;
+			if (name != "") {
+				onSavePreset(name);
+			}
+			else {
+				alert("Please specify name for the new preset.");
+			}
 		}
 
 		function onLoadPreset(name) {

@@ -133,6 +133,17 @@ function parseMessage(connection, message) {
             }
         });
     }
+    else if (json.type == 'delete_preset') {
+        fs.unlink(presetFolder + json.data, function(err) {
+            if (err) {
+                return console.log(err);
+            }
+            fillPresetList();
+            for (var c=0; c<connections.length; c++) {
+                sendPresetList(connections[c]);
+            }
+        });
+    }
 }
 
 function sendParamList(connection)

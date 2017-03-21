@@ -31,6 +31,10 @@ var parameters = [
         "name": "Message",
         "type": "string",
         "stringVal": "This is a sample string, edit it to update"
+    },
+    {
+        "name": "Click Me",
+        "type": "btn"
     }
 ]
 
@@ -194,6 +198,9 @@ function updateParam(connection, param) {
             }
             else if (p.type == "string") {
                 p.stringVal = param.stringVal;
+            }
+            else if (p.type == "btn") {
+                console.log("button click: "+p.name);
             }
             break;
         }

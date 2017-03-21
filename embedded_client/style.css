@@ -116,11 +116,12 @@ th.preset_name {
 }
 
 input#new_preset_name {
-	float: left;
-	width: 80%;
 }
 
 input#new_preset_btn {
-	width:19%;
-	float: right;
+	margin-left: 6px;
+}
+
+input#upload_preset_btn {
+	margin-left: 6px;
 }

@@ -13,7 +13,7 @@
 		<tr>
 			<th id='address_label_th'>Address:</th>
 			<!--<th id='address_th'><input id='address' type='text' value='{{websocket_server_address}}' /></th>-->
-			<th id='address_th'><input id='address' type='text' value='ws://192.168.1.5:8080/rc/' /></th>
+			<th id='address_th'><input id='address' type='text' value='ws://192.168.40.134:8080/rc/' /></th>
 			<th id='connect_btn_th'><input type='button' id='connect_btn' onclick='onConnectClick();' value='Connect' /></th>
 		</tr>
 	</table>
@@ -21,17 +21,19 @@
     <div id='app_presets_div'>
     	<table id='presets_title_table'>
     		<tr>
-    			<th style='width:50%;'>Presets</th>
-    			<th style='width:50%;'><div style='width:100%;'><input id='new_preset_name' type='text' /><input type='button' id='new_preset_btn' onclick='onNewPresetClick();' value='create new' /></div></th>
+    			<th style='width:25%;'>Presets</th>
+    			<th style='width:75%;'><div style='width:100%;'><input id='new_preset_name' type='text' /><input type='button' id='new_preset_btn' onclick='onNewPresetClick();' value='create new' /><input type='button' id='upload_preset_btn' onclick='onImportPresetClick();' value='import...' /></div></th>
     		</tr>
     	</table>
         <table id='presets_table'></table>
     </div>
+    <input id='file-input' type='file' name='Select Preset to Upload' onchange='onImportPresetFileSelected();' style='display: none;' />
 
 
 	<script>
 		var socket = undefined;
 		var connected = false;
+		var nextIncomingPresetName = undefined;
 
 		function setColorFields() {
 			$(".alphaColorPicker").spectrum({
@@ -102,9 +104,9 @@
 						<th class='preset_name'>"+name+"</th>\
 						<th><input type='button' onclick='onLoadPreset(\"" + name + "\");' value='load' /></th>\
 						<th><input type='button' onclick='onSavePreset(\"" + name + "\");' value='save' /></th>\
-						<th><input type='button' onclick='onDeletePreset(\"" + name + "\");' value='delete' /></th>\
+						<th><input type='button' onclick='onDownloadPreset(\"" + name + "\");' value='download' /></th>\
+						<th><input type='button' onclick='onDeletePreset(\"" + name + "\");' value='delete' style='background-color: #c00;' /></th>\
 					</tr>";
-				//"<tr><th><input type='button' onclick='onLoadPreset(\"" + name + "\");' value='" + name + "' /></th></tr>";
 		}
 
 		function onConnectClick() {
@@ -136,6 +138,10 @@
 			    console.log(jsonData.list);
 			    $('#presets_table').replaceWith(createPresetsTable(jsonData.list));
 			    document.getElementById('app_presets_div').style.visibility = "visible";
+			}
+			socket.events['take_preset_download'] = function(data) {
+				var filename = nextIncomingPresetName!=undefined?nextIncomingPresetName:"preset";
+				saveFile(filename + ".json", data);
 			}
 
 			socket.addEventListener("open", function(event) {
@@ -184,6 +190,36 @@
 			}
 		}
 
+		function onImportPresetClick() {
+			document.getElementById('file-input').click();
+		}
+
+		function onImportPresetFileSelected() {
+			var file = document.getElementById("file-input").files[0];
+			if (file) {
+			    var reader = new FileReader();
+			    reader.readAsText(file, "UTF-8");
+			    reader.onload = function (evt) {
+			    	var contents = evt.target.result;
+			    	var name = file.name.replace(/\.[^/.]+$/, "");	// trim file extension
+
+			    	var jsonContents = JSON.parse(contents);
+			    	var importPresetData = {};
+			    	importPresetData.name = name;
+			    	importPresetData.params = contents;
+
+			    	var json = {
+			    		type: 'import_preset',
+			    		data: JSON.stringify(importPresetData)
+			    	};
+			    	socket.send(JSON.stringify(json));
+			    }
+			    reader.onerror = function (evt) {
+			    	console.log("error reading file");
+			    }
+			}
+		}
+
 		function onLoadPreset(name) {
 		    var json = {
 		        type: 'load_preset',
@@ -203,6 +239,15 @@
 		function onDeletePreset(name) {
 			var json = {
 				type: 'delete_preset',
+				data: name
+			}
+			socket.send(JSON.stringify(json));
+		}
+
+		function onDownloadPreset(name) {
+			nextIncomingPresetName = name;
+			var json = {
+				type: 'download_preset',
 				data: name
 			}
 			socket.send(JSON.stringify(json));
@@ -291,6 +336,22 @@
 			else if (param.type=='string') {
 				document.getElementById(param.name).value = param.stringVal;
 			}
+		}
+
+
+		function saveFile(filename, data) {
+    		var blob = new Blob([data], {type: 'text/csv'});
+		    if(window.navigator.msSaveOrOpenBlob) {
+		        window.navigator.msSaveBlob(blob, filename);
+		    }
+		    else{
+		        var elem = window.document.createElement('a');
+		        elem.href = window.URL.createObjectURL(blob);
+		        elem.download = filename;        
+		        document.body.appendChild(elem);
+		        elem.click();        
+		        document.body.removeChild(elem);
+		    }
 		}
 	</script>
 </body>

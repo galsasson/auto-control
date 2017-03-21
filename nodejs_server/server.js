@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var parameters = [
+var currentParameters = [
     {
         "name": "Enable animation",
         "type": "bool",
@@ -106,7 +106,7 @@ wsServer.on('request', function(request) {
 function parseMessage(connection, message) {
     var json = JSON.parse(message);
     if (json.type == "get_param_list") {
-        sendParamList(connection);
+        sendParamList(connection, currentParameters);
     }
     else if (json.type == "update_param") {
         updateParam(connection, JSON.parse(json.data));
@@ -115,7 +115,7 @@ function parseMessage(connection, message) {
         sendPresetList(connection);
     }
     else if (json.type == "save_preset") {
-        fs.writeFile(presetFolder + json.data, JSON.stringify(parameters), function(err) {
+        fs.writeFile(presetFolder + json.data, JSON.stringify(currentParameters), function(err) {
             if (err) {
                 return console.log(err);
             }
@@ -131,9 +131,9 @@ function parseMessage(connection, message) {
             if (err) {
                 return console.log(err);
             }
-            parameters = JSON.parse(data);
+            currentParameters = JSON.parse(data);
             for (var c=0; c<connections.length; c++) {
-                sendParamList(connections[c]);
+                sendParamList(connections[c], currentParameters);
             }
         });
     }
@@ -148,13 +148,31 @@ function parseMessage(connection, message) {
             }
         });
     }
+    else if (json.type == 'download_preset') {
+        fs.readFile(presetFolder + json.data, 'utf8', function(err, data) {
+            if (err) {
+                return console.log(err);
+            }
+            var presetParameters = JSON.parse(data);
+            sendPresetDownload(connection, presetParameters);
+        });
+    }
 }
 
-function sendParamList(connection)
+function sendParamList(connection, params)
 {
     var json = {
         type: 'set_param_list',
-        data: JSON.stringify({'list':parameters})
+        data: JSON.stringify({'list':params})
+    };
+    connection.sendUTF(JSON.stringify(json));
+}
+
+function sendPresetDownload(connection, params)
+{
+    var json = {
+        type: 'take_preset_download',
+        data: JSON.stringify({'list':params})
     };
     connection.sendUTF(JSON.stringify(json));
 }
@@ -184,8 +202,8 @@ function updateParam(connection, param) {
     // console.log("updating param "+param.name+" with value "+param.value);
     var index;
     var p = undefined;
-    for (index=0; index<parameters.length; index++) {
-        p = parameters[index];
+    for (index=0; index<currentParameters.length; index++) {
+        p = currentParameters[index];
         if (p.name == param.name) {
             if (p.type == "bool") {
                 p.boolVal = param.boolVal;

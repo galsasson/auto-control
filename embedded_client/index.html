@@ -73,6 +73,10 @@
 			else if (item.type == 'string') {
 				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='value'><input type='text' class='string' id='"+item.name+"' value='"+item.stringVal+"' onchange='onStringChanged(\""+item.name+"\");' oninput='onStringChanged(\""+item.name+"\");'/></th></tr>";
 			}
+			else if (item.type == 'btn') {
+				return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='btn_th'><input type='button' class='btn' id='"+item.name+"' value='    "+item.name+"    ' onclick='onBtnClicked(\""+item.name+"\");'/></th></tr>";
+				// return "<tr class='params_table_tr'><th class='name'>"+item.name+"</th><th class='btn_th'><input type='button' class='btn' id='" + item.name + "' value='"+item.name"' /></th></tr>";
+			}
 		}
 
 		function createParametersTable(parameters) {
@@ -251,16 +255,21 @@
 			sendParamUpdate(name, "string", value);
 		}
 
+		function onBtnClicked(name) {
+			sendParamUpdate(name, 'btn', 'on');
+		}
+
 		function sendParamUpdate(name, type, value) {
 			if (socket==undefined) {
 				return;
 			}
-			var paramName = type + "Val";
 			var param = {
 				"name": name,
 				"type": type
 			}
+			var paramName = type + "Val";
 			param[paramName] = value;
+
 			var json = {
 				type: 'update_param',
 				data: JSON.stringify(param)

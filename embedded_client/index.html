@@ -13,7 +13,7 @@
 		<tr>
 			<th id='address_label_th'>Address:</th>
 			<!--<th id='address_th'><input id='address' type='text' value='{{websocket_server_address}}' /></th>-->
-			<th id='address_th'><input id='address' type='text' value='ws://192.168.40.134:8080/rc/' /></th>
+			<th id='address_th'><input id='address' type='text' value='ws://localhost:8080/rc/' /></th>
 			<th id='connect_btn_th'><input type='button' id='connect_btn' onclick='onConnectClick();' value='Connect' /></th>
 		</tr>
 	</table>
@@ -202,8 +202,12 @@
 			    reader.onload = function (evt) {
 			    	var contents = evt.target.result;
 			    	var name = file.name.replace(/\.[^/.]+$/, "");	// trim file extension
-
-			    	var jsonContents = JSON.parse(contents);
+			    	try {
+			    		var jsonContents = JSON.parse(contents);
+			    	}
+			    	catch(e) {
+			    		alert("Wrong file format, use valid preset .json file.");
+			    	}
 			    	var importPresetData = {};
 			    	importPresetData.name = name;
 			    	importPresetData.params = contents;
@@ -215,8 +219,11 @@
 			    	socket.send(JSON.stringify(json));
 			    }
 			    reader.onerror = function (evt) {
-			    	console.log("error reading file");
+			    	console.log("Error reading file");
 			    }
+			}
+			else {
+				alert("No file");
 			}
 		}
 
@@ -347,9 +354,9 @@
 		    else{
 		        var elem = window.document.createElement('a');
 		        elem.href = window.URL.createObjectURL(blob);
-		        elem.download = filename;        
+		        elem.download = filename;
 		        document.body.appendChild(elem);
-		        elem.click();        
+		        elem.click();
 		        document.body.removeChild(elem);
 		    }
 		}

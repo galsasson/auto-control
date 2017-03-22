@@ -131,7 +131,20 @@ function parseMessage(connection, message) {
             if (err) {
                 return console.log(err);
             }
-            currentParameters = JSON.parse(data);
+
+            // merge the two lists (don't replace)
+            var presetParams = JSON.parse(data);
+            for (var i=0; i<currentParameters.length; i++) {
+                var cp = currentParameters[i];
+                for (var j=0; j<presetParams.length; j++) {
+                    var pp = presetParams[j];
+                    if (cp.type == pp.type &&
+                        cp.name == pp.name) {
+                        // copy only val (not limits, etc)
+                        eval('cp.'+cp.type+'Val = pp.'+pp.type+'Val;');
+                    }
+                }
+            }
             for (var c=0; c<connections.length; c++) {
                 sendParamList(connections[c], currentParameters);
             }
@@ -155,6 +168,21 @@ function parseMessage(connection, message) {
             }
             var presetParameters = JSON.parse(data);
             sendPresetDownload(connection, presetParameters);
+        });
+    }
+    else if (json.type == 'import_preset') {
+        var presetJson = JSON.parse(json.data);
+        var presetName = presetJson.name;
+        var paramData = JSON.parse(presetJson.params).list;
+        fs.writeFile(presetFolder + presetName, JSON.stringify(paramData), function(err) {
+            if (err) {
+                return console.log(err);
+            }
+            console.log("New preset saved in: "+presetFolder + presetName);
+            fillPresetList();
+            for (var c=0; c<connections.length; c++) {
+                sendPresetList(connections[c]);
+            }
         });
     }
 }

@@ -12,8 +12,7 @@
 	<table id='connection_table'>
 		<tr>
 			<th id='address_label_th'>Address:</th>
-			<!--<th id='address_th'><input id='address' type='text' value='{{websocket_server_address}}' /></th>-->
-			<th id='address_th'><input id='address' type='text' value='ws://localhost:8080/rc/' /></th>
+			<th id='address_th'><input id='address' type='text' value='{{websocket_server_address}}' /></th>
 			<th id='connect_btn_th'><input type='button' id='connect_btn' onclick='onConnectClick();' value='Connect' /></th>
 		</tr>
 	</table>
@@ -210,7 +209,7 @@
 			    	}
 			    	var importPresetData = {};
 			    	importPresetData.name = name;
-			    	importPresetData.params = contents;
+			    	importPresetData.parameters = contents;
 
 			    	var json = {
 			    		type: 'import_preset',

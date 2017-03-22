@@ -173,7 +173,7 @@ function parseMessage(connection, message) {
     else if (json.type == 'import_preset') {
         var presetJson = JSON.parse(json.data);
         var presetName = presetJson.name;
-        var paramData = JSON.parse(presetJson.params).list;
+        var paramData = JSON.parse(presetJson.parameters).list;
         fs.writeFile(presetFolder + presetName, JSON.stringify(paramData), function(err) {
             if (err) {
                 return console.log(err);
